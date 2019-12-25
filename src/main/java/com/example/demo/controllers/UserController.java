@@ -38,12 +38,18 @@ public class UserController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id) {
+        log.debug("/api/user/id/(id): User with id {} was looked up.", id);
         return ResponseEntity.of(userRepository.findById(id));
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<User> findByUserName(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
+        if(user == null) {
+            log.debug("/api/user/(username): User {} was not found.", username);
+        } else {
+            log.debug("/api/user/(username): User {} was found.", username);
+        }
         return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
     }
 
@@ -51,7 +57,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest createUserRequest) {
 
         if(createUserRequest.getUsername() == null || createUserRequest.getUsername().isEmpty()) {
-            log.error("Username is missing. Cannot create user");
+            log.error("/api/user/create: Username is missing. Cannot create user");
             return new ResponseEntity<String>("Username is missing. Cannot create user.", HttpStatus.BAD_REQUEST);
         }
 
@@ -63,11 +69,11 @@ public class UserController {
 
         if (createUserRequest.getPassword() == null ||
                 createUserRequest.getPassword().length() < 7) {
-            log.error("Error with user password. Cannot create User {}", createUserRequest.getUsername());
+            log.error("/api/user/create: Error with user password. Cannot create User {}", createUserRequest.getUsername());
             return new ResponseEntity<String>("Error with user password. Cannot create User.", HttpStatus.BAD_REQUEST);
         }
         if (!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-            log.warn("Passwords do not match.");
+            log.warn("/api/user/create: Passwords do not match.");
             return new ResponseEntity<String>("Passwords do not match. Cannot create User.", HttpStatus.BAD_REQUEST);
         }
 
