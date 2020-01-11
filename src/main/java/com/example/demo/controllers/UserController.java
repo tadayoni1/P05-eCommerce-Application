@@ -76,8 +76,9 @@ public class UserController {
             log.warn("/api/user/create: Passwords do not match.");
             return new ResponseEntity<String>("Passwords do not match. Cannot create User.", HttpStatus.BAD_REQUEST);
         }
-
-        user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
+        String encryptedPassword = bCryptPasswordEncoder.encode(createUserRequest.getPassword());
+        user.setPassword(encryptedPassword);
+        user.setConfirmPassword(encryptedPassword);
 
         userRepository.save(user);
         return ResponseEntity.ok(user);
