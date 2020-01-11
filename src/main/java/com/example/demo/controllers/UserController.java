@@ -80,6 +80,7 @@ public class UserController {
         user.setConfirmPassword(encryptedPassword);
 
         userRepository.save(user);
+        log.error("/api/user/create: User {} has been created", user.getUsername());
         return ResponseEntity.ok(user);
     }
 
